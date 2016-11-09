@@ -73,7 +73,7 @@ var annotatedText = [];
 function definizioni(source, target) {
   //var value = document.getElementById(source).innerText;
 	var value = source;
-	var url = "api/proxy/textenrich?lex=0&text=" + value;
+	var url = "/ife/api/proxy/textenrich?lex=0&text=" + value;
   //$.getJSON('http://hlt-services7.fbk.eu:8011/simp?text=['+value+']')
 	$.getJSON(url)
 	  .done(function(json) {
@@ -101,7 +101,7 @@ function definizioni(source, target) {
 function semplificazione(source, target) {
   //var value = document.getElementById(source).innerText;
 	var value = source;
-	var url = "api/proxy/textenrich?lex=1&text=" + value;
+	var url = "/ife/api/proxy/textenrich?lex=1&text=" + value;
   //$.getJSON('http://hlt-services7.fbk.eu:8011/simp?text=['+value+']')
 	$.getJSON(url)
 	  .done(function(json) {
@@ -131,7 +131,7 @@ function semplificazione(source, target) {
 
 function wikipedia(source, target) {
 	var value = source;
-	var url = "api/proxy/wikipedia?content=" + value;
+	var url = "/ife/api/proxy/wikipedia?content=" + value;
 	$.getJSON(url)
 	  .done(function(json) {
 	    //console.log(JSON.stringify(baconGoodness));

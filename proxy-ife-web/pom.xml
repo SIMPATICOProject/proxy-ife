@@ -267,7 +267,7 @@
 			</plugin>
 
 		</plugins>
-		<finalName>proxy-ife</finalName>
+		<finalName>ife</finalName>
 	</build>
 
 	<repositories>
