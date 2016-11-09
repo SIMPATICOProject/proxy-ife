@@ -51,7 +51,7 @@ import com.mongodb.MongoException;
 
 @Configuration
 @ComponentScan("eu.simpaticoproject.ife")
-@PropertySource("classpath:ife.properties")
+@PropertySource("classpath:proxy-ife.properties")
 @EnableWebMvc
 @EnableSwagger2
 public class AppConfig extends WebMvcConfigurerAdapter {
