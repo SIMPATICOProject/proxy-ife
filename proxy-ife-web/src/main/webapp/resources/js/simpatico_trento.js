@@ -55,19 +55,6 @@ $( function() {
 		dialog_simplify.dialog("open");
 	});
 	
-	var initUserData = function() {
-		var data = JSON.parse(localStorage.userData || 'null');
-		if (!!data) {
-			$("#userdata").show();
-			$("#access").hide();
-		} else {
-			$("#access").show();
-			$("#userdata").hide();
-		}
-		$("#userdata").text(data.name + ' '+ data.surname);
-	}
-	initUserData();
-	
 	$("#access").on("click", function() {
     	var aacBase = 'https://dev.smartcommunitylab.it/aac';
 		var base = window.location.href;
