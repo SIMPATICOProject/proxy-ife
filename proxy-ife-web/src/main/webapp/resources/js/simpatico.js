@@ -60,11 +60,11 @@ $( function() {
 		if (!!data) {
 			$("#userdata").show();
 			$("#access").hide();
+			$("#userdata").text(data.name + ' '+ data.surname);
 		} else {
 			$("#access").show();
 			$("#userdata").hide();
 		}
-		$("#userdata").text(data.name + ' '+ data.surname);
 	}
 	initUserData();
 	
@@ -84,8 +84,7 @@ $( function() {
                 dataType: 'json',
                 success: function(data) {
                 	localStorage.userData = JSON.stringify(data);
-        			$("#access").hide();
-        			$("#userdata").show();
+        			initUserData();
                 },
                 error: function(err) { 
                 	console.log(err);
