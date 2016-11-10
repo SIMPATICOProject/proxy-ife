@@ -1,14 +1,24 @@
 .simpatico_navbar {
-	position: fixed;
+  position: fixed;
   top: 0px;
   width: 100%;
   height: 35px;
-  background-color: yellow;	
+  background-color: yellow; 
   padding: 5pt;
 }
 
+.simpatico_navbar #access {
+	padding: 10px;
+	float: right;
+} 
+
+.simpatico_navbar #userdata {
+    padding: 10px;
+    float: right;
+} 
+
 .main_form {
-	margin-top: 55px;
+	margin: 55px 1cm 0 1cm;
 }
 
 span.code {
@@ -94,11 +104,13 @@ input[type='radio'].mandatory, input[type='checkbox'].mandatory {
 body {
   z-index: 0;
   /*width: 1024pt;*/
-  margin-left: 1cm;
+/*   margin-left: 1cm;
   margin-right: 1cm;
   margin-top: 0.5cm;
   margin-bottom: 0.5cm;
-  font-family: Arial, sans-serif;
+ */
+   margin: 0; 
+   font-family: Arial, sans-serif;
   font-size: 10pt;
 }
 

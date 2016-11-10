@@ -6,7 +6,7 @@
 <script type="text/javascript">
         
         function complete() {
-            var params = JSON.parse(document.location.hash.substring(1));
+            var params = JSON.parse(decodeURIComponent(document.location.hash.substring(1)));
             window.opener.postMessage(params, '*');
             window.close();         
         }

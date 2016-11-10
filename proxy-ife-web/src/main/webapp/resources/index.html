@@ -1,0 +1,12 @@
+<html>
+  <head>
+    <script type="text/javascript">
+      function checkLogin() {
+    	  var tokenData = !!localStorage.tokenData ? JSON.parse(localStorage.tokenData) : null;
+    	  document.location = !!tokenData && tokenData.access_token && new Date().getTime() < tokenData.expires_on ? "./test.html" : "./login.html";
+      }
+    </script>
+  </head>
+  <body onload="checkLogin()">
+  </body>
+</html>    

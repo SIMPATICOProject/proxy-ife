@@ -55,6 +55,50 @@ $( function() {
 		dialog_simplify.dialog("open");
 	});
 	
+	var initUserData = function() {
+		var data = JSON.parse(localStorage.userData || 'null');
+		if (!!data) {
+			$("#userdata").show();
+			$("#access").hide();
+		} else {
+			$("#access").show();
+			$("#userdata").hide();
+		}
+		$("#userdata").text(data.name + ' '+ data.surname);
+	}
+	initUserData();
+	
+	$("#access").on("click", function() {
+    	var aacBase = 'https://dev.smartcommunitylab.it/aac';
+		var base = window.location.href;
+    	var arr = base.split("/");
+    	var redirect = arr[0]+'//'+arr[2]+'/ife/callback';
+
+		var url = aacBase + '/eauth/authorize/google?response_type=code&'
+				+ 'redirect_uri='+redirect+'&client_id=03b2a283-8a48-4057-b502-23ef15147c4b';
+        var win = window.open(url, 'AuthPopup', 'width=1024,height=768,resizable=true,scrollbars=true,status=true');
+        window.addEventListener('message', function (event) {
+        	$.ajax({
+                url: '/ife/userapi/profile',
+                type: 'GET',
+                dataType: 'json',
+                success: function(data) {
+                	localStorage.userData = JSON.stringify(data);
+        			$("#access").hide();
+        			$("#userdata").show();
+                },
+                error: function(err) { 
+                	console.log(err);
+                },
+                beforeSend: function(xhr) {
+                    xhr.setRequestHeader('Authorization', 'Bearer ' + event.data.access_token);
+                }
+              });
+        	localStorage.aacTokenData = JSON.stringify(event.data);
+            
+        }, false);
+
+	});
 });
 
 function getSelectedText(){
