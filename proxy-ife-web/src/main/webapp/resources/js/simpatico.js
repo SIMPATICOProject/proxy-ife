@@ -115,7 +115,7 @@ var annotatedText = [];
 
 function definizioni(source, target) {
   //var value = document.getElementById(source).innerText;
-	var value = source;
+	var value = source.replace(/[\t\r\n]/g, '');
 	var url = "/ife/api/proxy/textenrich?lex=0&text=" + value;
   //$.getJSON('http://hlt-services7.fbk.eu:8011/simp?text=['+value+']')
 	$.getJSON(url)
@@ -143,7 +143,7 @@ function definizioni(source, target) {
 
 function semplificazione(source, target) {
   //var value = document.getElementById(source).innerText;
-	var value = source;
+	var value = source.replace(/[\t\r\n]/g, '');
 	var url = "/ife/api/proxy/textenrich?lex=1&text=" + value;
   //$.getJSON('http://hlt-services7.fbk.eu:8011/simp?text=['+value+']')
 	$.getJSON(url)
