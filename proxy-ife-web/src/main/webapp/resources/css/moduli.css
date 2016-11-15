@@ -21,6 +21,11 @@
 	margin: 55px 1cm 0 1cm;
 }
 
+.test_content {
+	font-size: 1.5em;
+	line-height: 1.5em
+}
+
 span.code {
   font-family: "Lucida Console", Monaco, monospace;
   font-weight: bold;
@@ -144,7 +149,7 @@ h3.Modulo {
 
 p {
   text-align: justify;
-  font-size: 10pt;
+  /*font-size: 10pt;*/
   margin: 1pt;
 }
 
