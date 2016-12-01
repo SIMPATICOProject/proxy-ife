@@ -12,6 +12,16 @@
 	float: right;
 } 
 
+.simpatico_navbar #userdata {
+    padding: 10px;
+    float: right;
+} 
+
 .main_form {
 	margin: 55px 1cm 0 1cm;
+}
+
+.test_content {
+	font-size: 1.5em;
+	line-height: 1.5em
 }
