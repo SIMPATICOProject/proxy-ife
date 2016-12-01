@@ -73,7 +73,7 @@ $( function() {
     	var aacBase = 'https://tn.smartcommunitylab.it/aac';
 		var base = window.location.href;
     	var arr = base.split("/");
-    	var redirect = arr[0]+'//'+arr[2]+'/ife/callback';
+    	var redirect = 'https://dev.smartcommunitylab.it/ife/callback';
 //    	var authority = 'google';
     	var authority = 'adc';
 
