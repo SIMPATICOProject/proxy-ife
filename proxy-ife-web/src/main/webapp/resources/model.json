@@ -1,0 +1,152 @@
+{
+	"blocks" : [
+		{
+			"id" : "block1",
+			"xpath" : "//*[@id=\"modulo\"]/div[2]",
+			"tags" : ["tag1", "tag2"],
+			"fields" : ["field1", "field2"]
+		},
+		{
+			"id" : "block2",
+			"xpath" : "//*[@id=\"modulo\"]/div[3]",
+			"tags" : [],
+			"fields" : ["field3"]
+		},
+		{
+			"id" : "block3",
+			"xpath" : "//*[@id=\"modulo\"]/div[5]",
+			"tags" : [],
+			"fields" : []
+		},
+		{
+			"id" : "block4",
+			"xpath" : "//*[@id=\"modulo\"]/div[4]",
+			"tags" : [],
+			"fields" : []
+		},		
+		{
+			"id" : "block5",
+			"xpath" : "//*[@id=\"modulo\"]/table[6]",
+			"tags" : [],
+			"fields" : []
+		},		
+		{
+			"id" : "block6",
+			"xpath" : "//*[@id=\"modulo\"]/table[7]",
+			"tags" : [],
+			"fields" : []
+		},		
+		{
+			"id" : "block7",
+			"xpath" : "//*[@id=\"modulo\"]/div[13]",
+			"tags" : [],
+			"fields" : []
+		}		
+	],
+	"fields" : [
+		{
+			"id" : "field1",
+			"xpath" : "aaaaa",
+			"required" : true,
+			"rdf" : {
+				"subject" : "userLang",
+				"predicate" : "var_mapping",
+				"object" : "cdv.lang"
+			}
+		},
+		{
+			"id" : "field2",
+			"xpath" : "aaaaa",
+			"required" : true,
+			"rdf" : {
+				"subject" : "firstName",
+				"predicate" : "loc_field",
+				"object" : "xpath to html input field"
+			}
+		},
+		{
+			"id" : "field3",
+			"xpath" : "aaaaa",
+			"required" : true,
+			"rdf" : {
+				"subject" : "formLang",
+				"predicate" : "var_mapping",
+				"object" : "porfile.lang"
+			}
+		}		
+	],
+	"rules" : [
+		{
+			"blockId" : "block1",
+			"initialState" : "SHOW"
+		},
+		{
+			"blockId" : "block2",
+			"initialState" : "HIDE",
+			"conditions" : [
+				{
+					"type" : "block",
+					"value" : "blcok1"
+				}
+			]
+		},
+		{
+			"blockId" : "block3",
+			"initialState" : "HIDE",
+			"conditions" : [
+				{
+					"type" : "block",
+					"value" : "blcok2"
+				}
+			]
+		},
+		{
+			"blockId" : "block4",
+			"initialState" : "HIDE",
+			"conditions" : [
+				{
+					"type" : "block",
+					"value" : "blcok3"
+				}
+			]
+		},
+		{
+			"blockId" : "block5",
+			"initialState" : "HIDE",
+			"conditions" : [
+				{
+					"type" : "block",
+					"value" : "blcok4"
+				},
+				{
+					"type" : "variable",
+					"value" : "tempoPieno==true"
+				}
+			]
+		},
+		{
+			"blockId" : "block6",
+			"initialState" : "HIDE",
+			"conditions" : [
+				{
+					"type" : "block",
+					"value" : "blcok4"
+				},
+				{
+					"type" : "variable",
+					"value" : "tempoParziale==true"
+				}
+			]
+		},
+		{
+			"blockId" : "block7",
+			"initialState" : "HIDE",
+			"conditions" : [
+				{
+					"type" : "variable",
+					"value" : "moduloServizio==true"
+				}
+			]
+		}
+	]
+}

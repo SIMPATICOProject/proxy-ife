@@ -25,3 +25,9 @@
 	font-size: 1.5em;
 	line-height: 1.5em
 }
+
+.block_edited {
+	border: 2px yellow solid;
+	/* margin: 2px; */
+  /* padding: 2px; */
+}
