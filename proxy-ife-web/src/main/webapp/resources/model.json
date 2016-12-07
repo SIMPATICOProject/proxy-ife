@@ -26,19 +26,19 @@
 		},		
 		{
 			"id" : "block5",
-			"xpath" : "//*[@id=\"modulo\"]/table[6]",
+			"xpath" : "//*[@id=\"modulo\"]/table[1]",
 			"tags" : [],
 			"fields" : []
 		},		
 		{
 			"id" : "block6",
-			"xpath" : "//*[@id=\"modulo\"]/table[7]",
+			"xpath" : "//*[@id=\"modulo\"]/table[2]",
 			"tags" : [],
 			"fields" : []
 		},		
 		{
 			"id" : "block7",
-			"xpath" : "//*[@id=\"modulo\"]/div[13]",
+			"xpath" : "//*[@id=\"modulo\"]/div[6]",
 			"tags" : [],
 			"fields" : []
 		}		
@@ -86,7 +86,7 @@
 			"conditions" : [
 				{
 					"type" : "block",
-					"value" : "blcok1"
+					"value" : "block1"
 				}
 			]
 		},
@@ -96,7 +96,7 @@
 			"conditions" : [
 				{
 					"type" : "block",
-					"value" : "blcok2"
+					"value" : "block2"
 				}
 			]
 		},
@@ -106,7 +106,7 @@
 			"conditions" : [
 				{
 					"type" : "block",
-					"value" : "blcok3"
+					"value" : "block3"
 				}
 			]
 		},
@@ -116,11 +116,11 @@
 			"conditions" : [
 				{
 					"type" : "block",
-					"value" : "blcok4"
+					"value" : "block4"
 				},
 				{
-					"type" : "variable",
-					"value" : "tempoPieno==true"
+					"type" : "form_var",
+					"value" : "tempoPieno"
 				}
 			]
 		},
@@ -130,11 +130,11 @@
 			"conditions" : [
 				{
 					"type" : "block",
-					"value" : "blcok4"
+					"value" : "blok4"
 				},
 				{
-					"type" : "variable",
-					"value" : "tempoParziale==true"
+					"type" : "form_var",
+					"value" : "tempoParziale"
 				}
 			]
 		},
@@ -143,8 +143,8 @@
 			"initialState" : "HIDE",
 			"conditions" : [
 				{
-					"type" : "variable",
-					"value" : "moduloServizio==true"
+					"type" : "context_var",
+					"value" : "moduloServizio"
 				}
 			]
 		}

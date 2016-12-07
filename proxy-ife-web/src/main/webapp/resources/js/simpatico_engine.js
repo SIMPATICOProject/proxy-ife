@@ -1,8 +1,11 @@
 var selectedText = null;
 var workflowModel = null;
-var actualBlockIndex = 0;
-var prevBlockIdex = 0;
+var actualBlockIndex = -1;
+var prevBlockIndex = -1;
+var actualBlockId = null;
+var prevBlockId = null;
 var dependencyMap = {};
+var editedMap = {};
 
 $( function() {
 	var dialog_simplify = $("#dialog-simplify").dialog({
@@ -203,6 +206,16 @@ function wikipedia(source, target) {
 	  });
 }
 
+function getSimpaticoElement(simpaticoId) {
+	var element = $("[data-simpatico-id='" + simpaticoId + "'");
+	return element;
+}
+
+function getSimpaticoContainer() {
+	var container = $("[data-simpatico-id='simpatico_edit_block'");
+	return container;
+}
+
 function loadModel() {
 	var url = "model.json";
 	$.getJSON(url)
@@ -218,6 +231,80 @@ function loadModel() {
   	console.log(textStatus + ", " + error);
   	alert(textStatus + ", " + error);
   });
+}
+
+function getNextBlock() {
+	prevBlockId = actualBlockId;
+	prevBlockIndex = actualBlockIndex;
+	for(i = actualBlockIndex+1; i < workflowModel.blocks.length; i++) {
+		var block = workflowModel.blocks[i];
+		var rule = dependencyMap[block.id];
+		if(rule.conditions) {
+			var eligible = true;
+			for(j = 0; j < rule.conditions.length; j++) {
+				var condition = rule.conditions[j];
+				if(condition.type == "block") {
+					var blockEdited = editedMap[condition.value];
+					if(blockEdited == null) {
+						eligible = false;
+						break;
+					}
+				} else if(condition.type == "form_var") {
+					eligible = false;
+					break;
+				} else if(condition.type == "context_var") {
+					eligible = false;
+					break;
+				}
+			}
+			if(eligible) {
+				actualBlockIndex = i;
+				actualBlockId = workflowModel.blocks[actualBlockIndex].id;
+				break;
+			}
+		} else {
+			actualBlockIndex = i;
+			actualBlockId = workflowModel.blocks[actualBlockIndex].id;
+			break;
+		}
+	}
+}
+
+function getPrevBlock() {
+	prevBlockId = actualBlockId;
+	prevBlockIndex = actualBlockIndex;
+	for(i = actualBlockIndex-1; i >= 0; i--) {
+		var block = workflowModel.blocks[i];
+		var rule = dependencyMap[block.id];
+		if(rule.conditions) {
+			var eligible = true;
+			for(j = 0; j < rule.conditions.length; j++) {
+				var condition = rule.conditions[j];
+				if(condition.type == "block") {
+					var blockEdited = editedMap[condition.value];
+					if(blockEdited == null) {
+						eligible = false;
+						break;
+					}
+				} else if(condition.type == "form_var") {
+					eligible = false;
+					break;
+				} else if(condition.type == "context_var") {
+					eligible = false;
+					break;
+				}
+			}
+			if(eligible) {
+				actualBlockIndex = i;
+				actualBlockId = workflowModel.blocks[actualBlockIndex].id;
+				break;
+			}
+		} else {
+			actualBlockIndex = i;
+			actualBlockId = workflowModel.blocks[actualBlockIndex].id;
+			break;
+		}
+	}
 }
 
 function parseConditions() {
@@ -237,13 +324,12 @@ function parseConditions() {
 			}
 		}
 	}
-	var block = workflowModel.blocks[actualBlockIndex];
-	editBlock(block.id);
+	nextBlock();
 }
 
 function showElement(simpaticoId, state) {
 	//TODO enable/disable input flieds
-	var element = $("[data-simpatico-id='" + simpaticoId + "'");
+	var element = getSimpaticoElement(simpaticoId);
 	if(element != null) {
 		if(state == "SHOW") {
 			element.fadeTo("fast", 1);
@@ -256,7 +342,7 @@ function showElement(simpaticoId, state) {
 }
 
 function editBlock(simpaticoId) {
-	var element = $("[data-simpatico-id='" + simpaticoId + "'");
+	var element = getSimpaticoElement(simpaticoId);
 	if(element != null) {
 		element.wrap("<div data-simpatico-id='simpatico_edit_block' class='block_edited'></div>" );
 		var container = $("[data-simpatico-id='simpatico_edit_block'");
@@ -272,9 +358,9 @@ function editBlock(simpaticoId) {
 }
 
 function resetBlock(simpaticoId) {
-	var element = $("[data-simpatico-id='" + simpaticoId + "'");
+	var element = getSimpaticoElement(simpaticoId);
 	if(element != null) {
-		var container = $("[data-simpatico-id='simpatico_edit_block'");
+		var container = getSimpaticoContainer();
 		if(container != null) {
 			$(container).replaceWith(element);
 		}
@@ -285,40 +371,44 @@ function createNextButton() {
   return $('<button/>', {
   	type: 'button',
     text: 'Next',
-    id: 'btn_simpatico_next',
-    click: nextBlock
-  });
+    id: 'btn_simpatico_next'
+  }).click(nextBlock);
 }
 
 function createPrevButton() {
   return $('<button/>', {
     type: 'button',
   	text: 'Prev',
-    id: 'btn_simpatico_prev',
-    click: prevBlock
-  });
-}
-
-function nextBlock() {
-	//alert("next");
-	prevBlockIdex = actualBlockIndex;
-	actualBlockIndex = actualBlockIndex + 1;
-	var actualBlock = workflowModel.blocks[actualBlockIndex];
-	var prevBlock = workflowModel.blocks[prevBlockIdex];
-	showElement(prevBlock.id, "HIDE");
-	showElement(actualBlock.id, "SHOW");
-	resetBlock(prevBlock.id);
-	editBlock(actualBlock.id);
+    id: 'btn_simpatico_prev'
+  }).click(prevBlock);
 }
 
 function prevBlock() {
-	//alert("prev");
-	prevBlockIdex = actualBlockIndex;
-	actualBlockIndex = actualBlockIndex - 1;
-	var actualBlock = workflowModel.blocks[actualBlockIndex];
-	var prevBlock = workflowModel.blocks[prevBlockIdex];
-	showElement(prevBlock.id, "HIDE");
-	showElement(actualBlock.id, "SHOW");
-	resetBlock(prevBlock.id);
-	editBlock(actualBlock.id);
+	//TODO reset form
+	if(actualBlockId) {
+		editedMap[actualBlockId] = null;
+	}
+	getPrevBlock();
+	if(prevBlockId != null) {
+		showElement(prevBlockId, "HIDE");
+		resetBlock(prevBlockId);
+	}
+	showElement(actualBlockId, "SHOW");
+	editBlock(actualBlockId);
 }
+
+function nextBlock() {
+	//TODO check form complited
+	if(actualBlockId) {
+		editedMap[actualBlockId] = true;
+	}
+	getNextBlock();
+	if(prevBlockId != null) {
+		showElement(prevBlockId, "HIDE");
+		resetBlock(prevBlockId);
+	}
+	showElement(actualBlockId, "SHOW");
+	editBlock(actualBlockId);
+}
+
+
