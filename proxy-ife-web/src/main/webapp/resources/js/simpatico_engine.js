@@ -1,9 +1,11 @@
+var topBarHeight = 50;
 var selectedText = null;
 var workflowModel = null;
 var actualBlockIndex = -1;
 var prevBlockIndex = -1;
 var actualBlockId = null;
 var prevBlockId = null;
+var moveToBlock = true;
 var dependencyMap = {};
 var editedMap = {};
 
@@ -221,11 +223,11 @@ function loadModel() {
 	$.getJSON(url)
   .done(function(json) {
   	workflowModel = json;
-  	for (item in json.rules) {
+  	for(item in json.rules) {
   		dependencyMap[json.rules[item].blockId] = json.rules[item];
   	}
   	//console.log(JSON.stringify(json));
-  	parseConditions();
+  	initModule();
   })
   .fail(function( jqxhr, textStatus, error) {
   	console.log(textStatus + ", " + error);
@@ -234,8 +236,7 @@ function loadModel() {
 }
 
 function getNextBlock() {
-	prevBlockId = actualBlockId;
-	prevBlockIndex = actualBlockIndex;
+	moveToBlock = false;
 	for(i = actualBlockIndex+1; i < workflowModel.blocks.length; i++) {
 		var block = workflowModel.blocks[i];
 		var rule = dependencyMap[block.id];
@@ -250,29 +251,46 @@ function getNextBlock() {
 						break;
 					}
 				} else if(condition.type == "form_var") {
+					var element = $("#" + condition.value);
+					if(element != null) {
+						//TODO check generic input field value
+						if($(element).is(':checked')) {
+							continue;
+						}
+					} 
 					eligible = false;
 					break;
 				} else if(condition.type == "context_var") {
-					eligible = false;
-					break;
+					//TODO evaluate expression on context variables
+					//var result = eval.call(workflowModel.context, '(function() {' + condition.value + '}())');
+					var contextVar = workflowModel.context[condition.value];
+					if(contextVar == null) {
+						eligible = false;
+						break;
+					}
 				}
 			}
 			if(eligible) {
+				prevBlockId = actualBlockId;
+				prevBlockIndex = actualBlockIndex;
 				actualBlockIndex = i;
 				actualBlockId = workflowModel.blocks[actualBlockIndex].id;
+				moveToBlock = true;
 				break;
 			}
 		} else {
+			prevBlockId = actualBlockId;
+			prevBlockIndex = actualBlockIndex;
 			actualBlockIndex = i;
 			actualBlockId = workflowModel.blocks[actualBlockIndex].id;
+			moveToBlock = true;
 			break;
 		}
 	}
 }
 
 function getPrevBlock() {
-	prevBlockId = actualBlockId;
-	prevBlockIndex = actualBlockIndex;
+	moveToBlock = false;
 	for(i = actualBlockIndex-1; i >= 0; i--) {
 		var block = workflowModel.blocks[i];
 		var rule = dependencyMap[block.id];
@@ -287,27 +305,42 @@ function getPrevBlock() {
 						break;
 					}
 				} else if(condition.type == "form_var") {
+					var element = $("#" + condition.value);
+					if(element != null) {
+						if($(element).is(':checked')) {
+							continue;
+						}
+					} 
 					eligible = false;
 					break;
 				} else if(condition.type == "context_var") {
-					eligible = false;
-					break;
+					var contextVar = workflowModel.context[condition.value];
+					if(contextVar == null) {
+						eligible = false;
+						break;
+					}
 				}
 			}
 			if(eligible) {
+				prevBlockId = actualBlockId;
+				prevBlockIndex = actualBlockIndex;
 				actualBlockIndex = i;
 				actualBlockId = workflowModel.blocks[actualBlockIndex].id;
+				moveToBlock = true;
 				break;
 			}
 		} else {
+			prevBlockId = actualBlockId;
+			prevBlockIndex = actualBlockIndex;
 			actualBlockIndex = i;
 			actualBlockId = workflowModel.blocks[actualBlockIndex].id;
+			moveToBlock = true;
 			break;
 		}
 	}
 }
 
-function parseConditions() {
+function initModule() {
 	for (i = 0; i < workflowModel.blocks.length; i++) {
 		var block = workflowModel.blocks[i];
 		var rule = dependencyMap[block.id];
@@ -345,14 +378,18 @@ function editBlock(simpaticoId) {
 	var element = getSimpaticoElement(simpaticoId);
 	if(element != null) {
 		element.wrap("<div data-simpatico-id='simpatico_edit_block' class='block_edited'></div>" );
-		var container = $("[data-simpatico-id='simpatico_edit_block'");
+		var container = getSimpaticoContainer();
 		if(container != null) {
+			//add prev button
 			if(actualBlockIndex > 0) {
 				$(container).append(createPrevButton());
 			}
-			if(actualBlockIndex < workflowModel.blocks.length) {
+			//add next button
+			if(actualBlockIndex < (workflowModel.blocks.length - 1)) {
 				$(container).append(createNextButton());
 			}
+			var position = $(container).offset().top - 50;
+			$('html, body').animate({scrollTop: position}, 200);
 		}
 	}
 }
@@ -367,10 +404,28 @@ function resetBlock(simpaticoId) {
 	}
 }
 
+function doAction(blockId) {
+	var rule = dependencyMap[blockId];
+	if((rule != null) && (rule.action)) {
+		if(rule.action.type == "context_var") {
+			workflowModel.context[rule.action.value] = true;
+		}
+	}
+}
+
+function revertAction(blockId) {
+	var rule = dependencyMap[blockId];
+	if((rule != null) && (rule.action)) {
+		if(rule.action.type == "context_var") {
+			workflowModel.context[rule.action.value] = null;
+		}
+	}
+}
+
 function createNextButton() {
   return $('<button/>', {
   	type: 'button',
-    text: 'Next',
+    text: 'Prossimo',
     id: 'btn_simpatico_next'
   }).click(nextBlock);
 }
@@ -378,15 +433,19 @@ function createNextButton() {
 function createPrevButton() {
   return $('<button/>', {
     type: 'button',
-  	text: 'Prev',
+  	text: 'Precedente',
     id: 'btn_simpatico_prev'
   }).click(prevBlock);
 }
 
 function prevBlock() {
+	if(!moveToBlock) {
+		return;
+	}
 	//TODO reset form
 	if(actualBlockId) {
 		editedMap[actualBlockId] = null;
+		revertAction(actualBlockId);
 	}
 	getPrevBlock();
 	if(prevBlockId != null) {
@@ -398,9 +457,13 @@ function prevBlock() {
 }
 
 function nextBlock() {
+	if(!moveToBlock) {
+		return;
+	}
 	//TODO check form complited
 	if(actualBlockId) {
 		editedMap[actualBlockId] = true;
+		doAction(actualBlockId);
 	}
 	getNextBlock();
 	if(prevBlockId != null) {

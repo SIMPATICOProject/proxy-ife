@@ -1,4 +1,5 @@
 {
+	"context" : {},
 	"blocks" : [
 		{
 			"id" : "block1",
@@ -120,9 +121,13 @@
 				},
 				{
 					"type" : "form_var",
-					"value" : "tempoPieno"
+					"value" : "Tassonomia_FullTime"
 				}
-			]
+			],
+			"action" : {
+				"type" : "context_var",
+				"value" : "moduloServizio"
+			}
 		},
 		{
 			"blockId" : "block6",
@@ -130,13 +135,17 @@
 			"conditions" : [
 				{
 					"type" : "block",
-					"value" : "blok4"
+					"value" : "block4"
 				},
 				{
 					"type" : "form_var",
-					"value" : "tempoParziale"
+					"value" : "Tassonomia_PartTime"
 				}
-			]
+			],
+			"action" : {
+				"type" : "context_var",
+				"value" : "moduloServizio"
+			}
 		},
 		{
 			"blockId" : "block7",
