@@ -1,4 +1,4 @@
-var topBarHeight = 50;
+var topBarHeight = 5;
 var selectedText = null;
 var workflowModel = null;
 var actualBlockIndex = -1;
@@ -82,11 +82,11 @@ $( function() {
 	initUserData();
 	
 	$("#access").on("click", function() {
-    	var aacBase = 'https://tn.smartcommunitylab.it/aac';
+    var aacBase = 'https://tn.smartcommunitylab.it/aac';
 		var base = window.location.href;
-    	var arr = base.split("/");
-    	var redirect = arr[0]+'//'+arr[2]+'/ife/callback';
-    	var authority = 'google';
+    var arr = base.split("/");
+    var redirect = arr[0]+'//'+arr[2]+'/ife/callback';
+    var authority = 'google';
 //    	var authority = 'adc';
 
 		var url = aacBase + '/eauth/authorize/'+authority+'?response_type=code&'
@@ -397,7 +397,7 @@ function editBlock(simpaticoId) {
 			if(actualBlockIndex < (workflowModel.blocks.length - 1)) {
 				$(container).append(createNextButton());
 			}
-			var position = $(container).offset().top - 50;
+			var position = $(container).offset().top - topBarHeight;
 			$('html, body').animate({scrollTop: position}, 200);
 		}
 	}
@@ -435,6 +435,7 @@ function createNextButton() {
   return $('<button/>', {
   	type: 'button',
     text: 'Prossimo',
+    class: 'ui-button ui-widget',
     id: 'btn_simpatico_next'
   }).click(nextBlock);
 }
@@ -443,6 +444,7 @@ function createPrevButton() {
   return $('<button/>', {
     type: 'button',
   	text: 'Precedente',
+  	class: 'ui-button ui-widget',
     id: 'btn_simpatico_prev'
   }).click(prevBlock);
 }
