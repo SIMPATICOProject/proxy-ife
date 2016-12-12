@@ -126,7 +126,8 @@
 			],
 			"action" : {
 				"type" : "context_var",
-				"value" : "moduloServizio"
+				"key" : "moduloServizio",
+				"value" : "'FULL_TIME'"
 			}
 		},
 		{
@@ -144,7 +145,8 @@
 			],
 			"action" : {
 				"type" : "context_var",
-				"value" : "moduloServizio"
+				"key" : "moduloServizio",
+				"value" : "'PART_TIME'"
 			}
 		},
 		{
@@ -153,7 +155,7 @@
 			"conditions" : [
 				{
 					"type" : "context_var",
-					"value" : "moduloServizio"
+					"value" : "context['moduloServizio']=='FULL_TIME' || context['moduloServizio']=='PART_TIME'"
 				}
 			]
 		}

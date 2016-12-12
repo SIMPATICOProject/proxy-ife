@@ -235,6 +235,28 @@ function loadModel() {
   });
 }
 
+function evalFormVar(elementId) {
+	var element = $("#" + elementId);
+	if(element != null) {
+		//TODO check generic input field value
+		return $(element).is(':checked');
+	} else {
+		return false;
+	} 
+}
+
+function evalBlockEdited(blockId) {
+	var blockEdited = editedMap[blockId];
+	return (blockEdited != null);
+}
+
+function evalContextVar(expression) {
+	//TODO evaluate expression on context variables
+	var context = workflowModel.context;
+	var result = eval(expression);
+	return result;
+}
+
 function getNextBlock() {
 	moveToBlock = false;
 	for(i = actualBlockIndex+1; i < workflowModel.blocks.length; i++) {
@@ -245,26 +267,18 @@ function getNextBlock() {
 			for(j = 0; j < rule.conditions.length; j++) {
 				var condition = rule.conditions[j];
 				if(condition.type == "block") {
-					var blockEdited = editedMap[condition.value];
-					if(blockEdited == null) {
+					if(!evalBlockEdited(condition.value)) {
 						eligible = false;
 						break;
 					}
 				} else if(condition.type == "form_var") {
-					var element = $("#" + condition.value);
-					if(element != null) {
-						//TODO check generic input field value
-						if($(element).is(':checked')) {
-							continue;
-						}
-					} 
-					eligible = false;
-					break;
+					if(!evalFormVar(condition.value)) {
+						eligible = false;
+						break;
+					}
 				} else if(condition.type == "context_var") {
-					//TODO evaluate expression on context variables
-					//var result = eval.call(workflowModel.context, '(function() {' + condition.value + '}())');
-					var contextVar = workflowModel.context[condition.value];
-					if(contextVar == null) {
+					var result = evalContextVar(condition.value);
+					if(!result) {
 						eligible = false;
 						break;
 					}
@@ -299,23 +313,18 @@ function getPrevBlock() {
 			for(j = 0; j < rule.conditions.length; j++) {
 				var condition = rule.conditions[j];
 				if(condition.type == "block") {
-					var blockEdited = editedMap[condition.value];
-					if(blockEdited == null) {
+					if(!evalBlockEdited(condition.value)) {
 						eligible = false;
 						break;
 					}
 				} else if(condition.type == "form_var") {
-					var element = $("#" + condition.value);
-					if(element != null) {
-						if($(element).is(':checked')) {
-							continue;
-						}
-					} 
-					eligible = false;
-					break;
+					if(!evalFormVar(condition.value)) {
+						eligible = false;
+						break;
+					}
 				} else if(condition.type == "context_var") {
-					var contextVar = workflowModel.context[condition.value];
-					if(contextVar == null) {
+					var result = evalContextVar(condition.value);
+					if(!result) {
 						eligible = false;
 						break;
 					}
@@ -408,7 +417,7 @@ function doAction(blockId) {
 	var rule = dependencyMap[blockId];
 	if((rule != null) && (rule.action)) {
 		if(rule.action.type == "context_var") {
-			workflowModel.context[rule.action.value] = true;
+			workflowModel.context[rule.action.key] = eval(rule.action.value);
 		}
 	}
 }
@@ -417,7 +426,7 @@ function revertAction(blockId) {
 	var rule = dependencyMap[blockId];
 	if((rule != null) && (rule.action)) {
 		if(rule.action.type == "context_var") {
-			workflowModel.context[rule.action.value] = null;
+			delete workflowModel.context[rule.action.key];
 		}
 	}
 }
@@ -439,15 +448,15 @@ function createPrevButton() {
 }
 
 function prevBlock() {
-	if(!moveToBlock) {
-		return;
-	}
 	//TODO reset form
 	if(actualBlockId) {
-		editedMap[actualBlockId] = null;
+		delete editedMap[actualBlockId];
 		revertAction(actualBlockId);
 	}
 	getPrevBlock();
+	if(!moveToBlock) {
+		return;
+	}
 	if(prevBlockId != null) {
 		showElement(prevBlockId, "HIDE");
 		resetBlock(prevBlockId);
@@ -457,15 +466,15 @@ function prevBlock() {
 }
 
 function nextBlock() {
-	if(!moveToBlock) {
-		return;
-	}
 	//TODO check form complited
 	if(actualBlockId) {
 		editedMap[actualBlockId] = true;
 		doAction(actualBlockId);
 	}
 	getNextBlock();
+	if(!moveToBlock) {
+		return;
+	}
 	if(prevBlockId != null) {
 		showElement(prevBlockId, "HIDE");
 		resetBlock(prevBlockId);
