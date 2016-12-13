@@ -4,14 +4,14 @@
 		{
 			"id" : "block1",
 			"xpath" : "//*[@id=\"modulo\"]/div[2]",
-			"tags" : ["tag1", "tag2"],
-			"fields" : ["field1", "field2"]
+			"tags" : [],
+			"fields" : []
 		},
 		{
 			"id" : "block2",
 			"xpath" : "//*[@id=\"modulo\"]/div[3]",
 			"tags" : [],
-			"fields" : ["field3"]
+			"fields" : []
 		},
 		{
 			"id" : "block3",
@@ -29,13 +29,13 @@
 			"id" : "block5",
 			"xpath" : "//*[@id=\"modulo\"]/table[1]",
 			"tags" : [],
-			"fields" : []
+			"fields" : ["Tassonomia_FullTime"]
 		},		
 		{
 			"id" : "block6",
 			"xpath" : "//*[@id=\"modulo\"]/table[2]",
 			"tags" : [],
-			"fields" : []
+			"fields" : ["Tassonomia_PartTime"]
 		},		
 		{
 			"id" : "block7",
@@ -46,35 +46,25 @@
 	],
 	"fields" : [
 		{
-			"id" : "field1",
-			"xpath" : "aaaaa",
-			"required" : true,
-			"rdf" : {
-				"subject" : "userLang",
-				"predicate" : "var_mapping",
-				"object" : "cdv.lang"
+			"id" : "Tassonomia_FullTime",
+			"xpath" : "//*[@id=\"Tassonomia_FullTime\"]",
+			"required" : false,
+			"mapping" : {
+				"type" : "context_mapping",
+				"key" : "moduloServizio",
+				"value" : "'FULL_TIME'"
 			}
 		},
 		{
-			"id" : "field2",
-			"xpath" : "aaaaa",
-			"required" : true,
-			"rdf" : {
-				"subject" : "firstName",
-				"predicate" : "loc_field",
-				"object" : "xpath to html input field"
+			"id" : "Tassonomia_PartTime",
+			"xpath" : "//*[@id=\"Tassonomia_FullTime\"]",
+			"required" : false,
+			"mapping" : {
+				"type" : "context_mapping",
+				"key" : "moduloServizio",
+				"value" : "'PART_TIME'"
 			}
-		},
-		{
-			"id" : "field3",
-			"xpath" : "aaaaa",
-			"required" : true,
-			"rdf" : {
-				"subject" : "formLang",
-				"predicate" : "var_mapping",
-				"object" : "porfile.lang"
-			}
-		}		
+		}	
 	],
 	"rules" : [
 		{
@@ -123,12 +113,7 @@
 					"type" : "form_var",
 					"value" : "Tassonomia_FullTime"
 				}
-			],
-			"action" : {
-				"type" : "context_var",
-				"key" : "moduloServizio",
-				"value" : "'FULL_TIME'"
-			}
+			]
 		},
 		{
 			"blockId" : "block6",
@@ -142,12 +127,7 @@
 					"type" : "form_var",
 					"value" : "Tassonomia_PartTime"
 				}
-			],
-			"action" : {
-				"type" : "context_var",
-				"key" : "moduloServizio",
-				"value" : "'PART_TIME'"
-			}
+			]
 		},
 		{
 			"blockId" : "block7",

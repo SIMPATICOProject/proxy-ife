@@ -8,6 +8,9 @@ var prevBlockId = null;
 var moveToBlock = true;
 var dependencyMap = {};
 var editedMap = {};
+var blockMap = {};
+var fieldMap = {};
+
 
 $( function() {
 	var dialog_simplify = $("#dialog-simplify").dialog({
@@ -224,8 +227,14 @@ function loadModel() {
 	$.getJSON(url)
   .done(function(json) {
   	workflowModel = json;
+  	for(item in json.blocks) {
+  		blockMap[json.blocks[item].id] = json.blocks[item];
+  	} 
   	for(item in json.rules) {
   		dependencyMap[json.rules[item].blockId] = json.rules[item];
+  	}
+  	for(item in json.fields) {
+  		fieldMap[json.fields[item].id] = json.fields[item]; 
   	}
   	//console.log(JSON.stringify(json));
   	initModule();
@@ -415,19 +424,31 @@ function resetBlock(simpaticoId) {
 }
 
 function doAction(blockId) {
-	var rule = dependencyMap[blockId];
-	if((rule != null) && (rule.action)) {
-		if(rule.action.type == "context_var") {
-			workflowModel.context[rule.action.key] = eval(rule.action.value);
+	var block = blockMap[blockId];
+	if(block != null) {
+		for(index in block.fields) {
+			var fieldId = block.fields[index];
+			var field = fieldMap[fieldId];
+			if(field != null) {
+				if(field.mapping.type = "context_mapping") {
+					workflowModel.context[field.mapping.key] = eval(field.mapping.value);
+				}
+			}
 		}
 	}
 }
 
 function revertAction(blockId) {
-	var rule = dependencyMap[blockId];
-	if((rule != null) && (rule.action)) {
-		if(rule.action.type == "context_var") {
-			delete workflowModel.context[rule.action.key];
+	var block = blockMap[blockId];
+	if(block != null) {
+		for(index in block.fields) {
+			var fieldId = block.fields[index];
+			var field = fieldMap[fieldId];
+			if(field != null) {
+				if(field.mapping.type = "context_mapping") {
+					delete workflowModel.context[field.mapping.key];
+				}
+			}
 		}
 	}
 }
