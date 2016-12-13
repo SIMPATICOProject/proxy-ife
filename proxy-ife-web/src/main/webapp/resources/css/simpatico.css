@@ -33,6 +33,7 @@
 
 .block_edited {
 	border: 2px yellow solid;
+	width: 19cm;
 	/* margin: 2px; */
   /* padding: 2px; */
 }
