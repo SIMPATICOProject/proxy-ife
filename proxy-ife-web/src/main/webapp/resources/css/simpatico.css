@@ -22,13 +22,28 @@
     float: right;
 } 
 
+.ui-widget-content .simpatico-label  {
+	background-color:#337ab7;
+	color:#ffffff;
+	padding-top: 0.1em;
+	padding-bottom: 0.1em;
+	padding-right: 0.3em;
+	padding-left: 0.3em;
+	border-radius: .25em
+}
+
+.ui-widget-content p {
+	line-height: 1.5em;
+}
+
 .main_form {
 	margin: 5px 25px 0 25px;
 }
 
 .test_content {
 	font-size: 1.5em;
-	line-height: 1.5em
+	line-height: 1.5em;
+	width: 19cm;
 }
 
 .block_edited {

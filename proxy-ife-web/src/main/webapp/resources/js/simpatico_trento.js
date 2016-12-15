@@ -1,6 +1,8 @@
 var selectedText = null;
 
 $( function() {
+	$(document).tooltip();
+	
 	var dialog_simplify = $("#dialog-simplify").dialog({
 		autoOpen: false,
 	  modal: true,
@@ -129,9 +131,10 @@ function definizioni(source, target) {
 	    for (itemName in json.readability.forms) {
 	    	item = json.readability.forms[itemName];
 	    	annotatedText = annotatedText + value.substring(index, item.start-1);
-	      annotatedText = annotatedText + ' <a  title="' + item.description.description + 
-	      '" style="background-color:#FFFFFF;color:#000000;text-decoration:underline">' + 
-	      value.substring(item.start, item.end) +'</a> '
+	    	var originalText = value.substring(item.start, item.end);
+	      annotatedText = annotatedText + 
+	      ' <a class="simpatico-label" title="' + item.description.description + 
+	      '">' + originalText +'</a> ';
 	      index = item.end;
 	    }
 	    annotatedText = annotatedText + value.substring(index, value.length);
@@ -157,10 +160,10 @@ function semplificazione(source, target) {
 	    if(json.simplifications) {
 	    	//console.log(JSON.stringify(json.simplifications));
 		    for (item in json.simplifications) {
+		    	var originalText = value.substring(json.simplifications[item].start, json.simplifications[item].end);
 	        annotatedText = annotatedText + value.substring(index, json.simplifications[item].start-1);
-	        annotatedText = annotatedText + ' <a  title="' + json.simplifications[item].simplification + 
-	        '" style="background-color:#FFFFFF;color:#000000;text-decoration:underline">' + 
-	        value.substring(json.simplifications[item].start, json.simplifications[item].end) +'</a> '
+	        annotatedText = annotatedText + ' <a class="simpatico-label" title="' + json.simplifications[item].simplification + 
+	        '">' + originalText +'</a> '
 	        index = json.simplifications[item].end;
 		    }
 		    annotatedText = annotatedText + value.substring(index, value.length);
