@@ -236,6 +236,14 @@ function wikipedia(source, target) {
 	    		actualLinkItem = item;
 	    	}
 	    }
+	    if(actualLinkItem != null) {
+	    	annotatedText = annotatedText + value.substring(index, actualLinkItem.offset-1);
+	    	var originalText = value.substring(actualLinkItem.offset, actualLinkItem.offset + actualLinkItem.length);
+	      annotatedText = annotatedText + 
+	      ' <a class="simpatico-label" target="_blank" href="' + actualLinkItem.page + 
+	      '">' + originalText +'</a> ';
+	      index = actualLinkItem.offset + actualLinkItem.length;
+	    }
 	    annotatedText = annotatedText + value.substring(index, value.length);
 	    //console.log('annotatedText ' + annotatedText);
 	    document.getElementById(target).innerHTML = '<p>' + annotatedText + '</p>';
