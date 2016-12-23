@@ -3,42 +3,49 @@
 	"blocks" : [
 		{
 			"id" : "block1",
+			"type" : "BLOCK",
 			"xpath" : "//*[@id=\"modulo\"]/div[2]",
 			"tags" : [],
 			"fields" : []
 		},
 		{
 			"id" : "block2",
+			"type" : "BLOCK",
 			"xpath" : "//*[@id=\"modulo\"]/div[3]",
 			"tags" : [],
 			"fields" : []
 		},
 		{
 			"id" : "block3",
+			"type" : "BLOCK",
 			"xpath" : "//*[@id=\"modulo\"]/div[5]",
 			"tags" : [],
 			"fields" : []
 		},
 		{
 			"id" : "block4",
+			"type" : "BLOCK",
 			"xpath" : "//*[@id=\"modulo\"]/div[4]",
+			"tags" : [],
+			"fields" : ["Tassonomia_FullTime", "Tassonomia_PartTime"]
+		},		
+		{
+			"id" : "block5",
+			"type" : "BLOCK",
+			"xpath" : "//*[@id=\"modulo\"]/table[1]",
 			"tags" : [],
 			"fields" : []
 		},		
 		{
-			"id" : "block5",
-			"xpath" : "//*[@id=\"modulo\"]/table[1]",
-			"tags" : [],
-			"fields" : ["Tassonomia_FullTime"]
-		},		
-		{
 			"id" : "block6",
+			"type" : "BLOCK",
 			"xpath" : "//*[@id=\"modulo\"]/table[2]",
 			"tags" : [],
-			"fields" : ["Tassonomia_PartTime"]
+			"fields" : []
 		},		
 		{
 			"id" : "block7",
+			"type" : "BLOCK",
 			"xpath" : "//*[@id=\"modulo\"]/div[6]",
 			"tags" : [],
 			"fields" : []
@@ -50,19 +57,19 @@
 			"xpath" : "//*[@id=\"Tassonomia_FullTime\"]",
 			"required" : false,
 			"mapping" : {
-				"type" : "context_mapping",
-				"key" : "moduloServizio",
-				"value" : "'FULL_TIME'"
+				"type" : "FIELD",
+				"key" : "Tassonomia_FullTime",
+				"binding" : "VAR"
 			}
 		},
 		{
 			"id" : "Tassonomia_PartTime",
-			"xpath" : "//*[@id=\"Tassonomia_FullTime\"]",
+			"xpath" : "//*[@id=\"Tassonomia_PartTime\"]",
 			"required" : false,
 			"mapping" : {
-				"type" : "context_mapping",
-				"key" : "moduloServizio",
-				"value" : "'PART_TIME'"
+				"type" : "FIELD",
+				"key" : "Tassonomia_PartTime",
+				"binding" : "VAR"
 			}
 		}	
 	],
@@ -76,7 +83,7 @@
 			"initialState" : "HIDE",
 			"conditions" : [
 				{
-					"type" : "block",
+					"type" : "BLOCK",
 					"value" : "block1"
 				}
 			]
@@ -86,7 +93,7 @@
 			"initialState" : "HIDE",
 			"conditions" : [
 				{
-					"type" : "block",
+					"type" : "BLOCK",
 					"value" : "block2"
 				}
 			]
@@ -96,7 +103,7 @@
 			"initialState" : "HIDE",
 			"conditions" : [
 				{
-					"type" : "block",
+					"type" : "BLOCK",
 					"value" : "block3"
 				}
 			]
@@ -106,12 +113,12 @@
 			"initialState" : "HIDE",
 			"conditions" : [
 				{
-					"type" : "block",
+					"type" : "BLOCK",
 					"value" : "block4"
 				},
 				{
-					"type" : "form_var",
-					"value" : "Tassonomia_FullTime"
+					"type" : "VAR",
+					"value" : "context['Tassonomia_FullTime']=='FT'"
 				}
 			]
 		},
@@ -120,12 +127,12 @@
 			"initialState" : "HIDE",
 			"conditions" : [
 				{
-					"type" : "block",
+					"type" : "BLOCK",
 					"value" : "block4"
 				},
 				{
-					"type" : "form_var",
-					"value" : "Tassonomia_PartTime"
+					"type" : "VAR",
+					"value" : "context['Tassonomia_PartTime']=='PT'"
 				}
 			]
 		},
@@ -134,8 +141,8 @@
 			"initialState" : "HIDE",
 			"conditions" : [
 				{
-					"type" : "context_var",
-					"value" : "context['moduloServizio']=='FULL_TIME' || context['moduloServizio']=='PART_TIME'"
+					"type" : "VAR",
+					"value" : "context['Tassonomia_FullTime']=='FT' || context['Tassonomia_PartTime']=='PT'"
 				}
 			]
 		}

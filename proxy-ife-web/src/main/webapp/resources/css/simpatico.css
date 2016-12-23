@@ -3,7 +3,7 @@
   top: 0px;
   width: 100%;
   height: 40px;
-  background-color: yellow; 
+  background-color: rgba(0, 128, 255, 0.45); 
   padding: 5px;
 }
 
@@ -47,8 +47,8 @@
 }
 
 .block_edited {
-	border: 2px yellow solid;
+	border: 3px rgba(0, 128, 255, 0.45) solid;
 	width: 19cm;
 	/* margin: 2px; */
-  /* padding: 2px; */
+  padding: 2px;
 }
