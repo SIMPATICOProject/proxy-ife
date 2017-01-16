@@ -6,7 +6,7 @@
 			"type" : "BLOCK",
 			"xpath" : "//*[@id=\"modulo\"]/div[2]",
 			"tags" : [],
-			"fields" : []
+			"fields" : ["AventeTitolo_CodiceFiscale"]
 		},
 		{
 			"id" : "block2",
@@ -52,6 +52,16 @@
 		}		
 	],
 	"fields" : [
+		{
+			"id" : "AventeTitolo_CodiceFiscale",
+			"xpath" : "//*[@id=\"AventeTitolo_CodiceFiscale\"]",
+			"required" : true,
+			"mapping" : {
+				"type" : "FIELD",
+				"key" : "AventeTitolo_CodiceFiscale",
+				"binding" : "VAR"
+			}
+		},
 		{
 			"id" : "Tassonomia_FullTime",
 			"xpath" : "//*[@id=\"Tassonomia_FullTime\"]",

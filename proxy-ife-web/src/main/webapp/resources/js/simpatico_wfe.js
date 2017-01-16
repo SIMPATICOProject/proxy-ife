@@ -10,6 +10,7 @@ var ruleMap = {};
 var blockCompiledMap = {};
 var blockMap = {};
 var fieldMap = {};
+var uncompletedFieldMap = {};
 
 $( function() {
 	$(document).tooltip();
@@ -292,30 +293,18 @@ function loadModel() {
   });
 }
 
-function evalFormVar(elementId) {
-	var element = $("#" + elementId);
-	if(element != null) {
-		//TODO check generic input field value
-		return $(element).is(':checked');
-	} else {
-		return false;
-	} 
-}
-
 function evalBlockEdited(blockId) {
 	var blockEdited = blockCompiledMap[blockId];
 	return (blockEdited != null);
 }
 
 function evalContextVar(expression) {
-	//TODO evaluate expression on context variables
 	var context = workflowModel.context;
 	var result = eval(expression);
 	return result;
 }
 
 function evaluateCondition(condition) {
-	//TODO evaluate condition
 	if(condition.type == "BLOCK") {
 		return evalBlockEdited(condition.value);
 	}
@@ -399,7 +388,6 @@ function initModule() {
 			//add id
 			$(element).attr("data-simpatico-block-id", block.id);
 			if(rule.conditions) {
-				//TODO evaluate conditions
 				showElement(block.id, rule.initialState);
 			} else {
 				showElement(block.id, rule.initialState);
@@ -419,7 +407,7 @@ function initModule() {
 }
 
 function showElement(simpaticoId, state) {
-	//TODO enable/disable input flieds
+	//TODO enable/disable input flieds?
 	var element = getSimpaticoBlockElement(simpaticoId);
 	if(element != null) {
 		if(state == "SHOW") {
@@ -446,6 +434,8 @@ function editBlock(simpaticoId) {
 			if(actualBlockIndex < (workflowModel.blocks.length - 1)) {
 				$(container).append(createNextButton());
 			}
+			//add error message
+			$(container).append(createErrorMsg(uncompletedFieldMap));
 			var position = $(container).offset().top - topBarHeight;
 			$('html, body').animate({scrollTop: position}, 200);
 		}
@@ -527,8 +517,22 @@ function createPrevButton() {
   }).click(prevBlock);
 }
 
+function createErrorMsg(obj) {
+	return $('<label/>', {
+		text: '',
+		id: 'div_simpatico_error_msg'
+	});
+}
+
+function setErrorMsg(obj) {
+	var element = $("#div_simpatico_error_msg");
+	if(element != null) {
+		$(element).text(JSON.stringify(obj));
+	}
+}
+
 function prevBlock() {
-	//TODO reset form
+	//TODO reset form?
 	if(actualBlockId) {
 		delete blockCompiledMap[actualBlockId];
 		revertBlockVars(actualBlockId);
@@ -546,11 +550,13 @@ function prevBlock() {
 }
 
 function nextBlock() {
-	//TODO check form complited
 	if(actualBlockId) {
 		if(isBlockCompleted(actualBlockId)) {
 			blockCompiledMap[actualBlockId] = true;
 			setBlockVars(actualBlockId);
+		} else {
+			delete blockCompiledMap[actualBlockId];
+			setErrorMsg(uncompletedFieldMap);
 		}
 	}
 	getNextBlock();
@@ -589,11 +595,32 @@ function fillBlock() {
 }
 
 function isBlockCompleted(blockId) {
-	//TODO isBlockCompleted
-	return true;
+	uncompletedFieldMap = {};
+	var result = true;
+	var block = blockMap[blockId];
+	if(block != null) {
+		for(index in block.fields) {
+			var fieldId = block.fields[index];
+			var field = fieldMap[fieldId];
+			if(field != null) {
+				if(field.required) {
+					var element = getSimpaticoFieldElement(field.id);
+					if(element != null) {
+						var value = getInputValue(element);
+						if((value == null) || (value == "")) {
+							result = false;
+							uncompletedFieldMap[field.id] = field;
+						}
+					}
+				}
+			}
+		}
+	}
+	return result;
 } 
 
 function getInputValue(element) {
+	//TODO get input value
 	if($(element).is(':checkbox')) {
 		if($(element).is(':checked')) {
 			return $(element).val();
