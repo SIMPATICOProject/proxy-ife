@@ -271,7 +271,7 @@ function getSimpaticoContainer() {
 }
 
 function loadModel() {
-	var url = "model.json";
+	var url = "api/wfe/model/page?uri=http://simaptico.eu/test&idProfile=test";
 	$.getJSON(url)
   .done(function(json) {
   	workflowModel = json;

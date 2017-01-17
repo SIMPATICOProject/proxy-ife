@@ -49,6 +49,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 import com.mongodb.MongoClient;
 import com.mongodb.MongoException;
 
+import eu.simpaticoproject.ife.storage.RepositoryManager;
+
 @Configuration
 @ComponentScan("eu.simpaticoproject.ife")
 @PropertySource("classpath:proxy-ife.properties")
@@ -98,6 +100,12 @@ public class AppConfig extends WebMvcConfigurerAdapter {
 	public MongoTemplate getMongo() throws UnknownHostException, MongoException {
 		return new MongoTemplate(new MongoClient(), dbName);
 	}
+	
+	@Bean
+	RepositoryManager getRepositoryManager() throws UnknownHostException, MongoException {
+		return new RepositoryManager(getMongo());
+	}
+
 
 	@Bean
 	TemplateEngine getTemplateEngine() {
