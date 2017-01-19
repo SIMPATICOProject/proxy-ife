@@ -11,6 +11,7 @@ var blockCompiledMap = {};
 var blockMap = {};
 var fieldMap = {};
 var uncompletedFieldMap = {};
+var contextVar = {};
 
 $( function() {
 	$(document).tooltip();
@@ -278,9 +279,6 @@ function loadModel() {
   	for(item in json.blocks) {
   		blockMap[json.blocks[item].id] = json.blocks[item];
   	} 
-  	for(item in json.rules) {
-  		ruleMap[json.rules[item].blockId] = json.rules[item];
-  	}
   	for(item in json.fields) {
   		fieldMap[json.fields[item].id] = json.fields[item]; 
   	}
@@ -299,19 +297,9 @@ function evalBlockEdited(blockId) {
 }
 
 function evalContextVar(expression) {
-	var context = workflowModel.context;
+	var context = contextVar;
 	var result = eval(expression);
 	return result;
-}
-
-function evaluateCondition(condition) {
-	if(condition.type == "BLOCK") {
-		return evalBlockEdited(condition.value);
-	}
-	if(condition.type == "VAR") {
-		return evalContextVar(condition.value);
-	}
-	return false;
 }
 
 function setActualBlock(index) {
@@ -322,79 +310,75 @@ function setActualBlock(index) {
 	moveToBlock = true;
 }
 
+function checkDependencies(block) {
+	var result = true;
+	if(block.dependencies) {
+		for(var i = 0; i < block.dependencies.length; i++) {
+			var blockId = block.dependencies[i];
+			var completed = evalBlockEdited(blockId);
+			if(!completed) {
+				result = false;
+				break;
+			}
+		}
+	}
+	return result;
+}
+
 function getNextBlock() {
 	moveToBlock = false;
-	for(i = actualBlockIndex+1; i < workflowModel.blocks.length; i++) {
+	for(var i = actualBlockIndex+1; i < workflowModel.blocks.length; i++) {
 		var block = workflowModel.blocks[i];
-		var rule = ruleMap[block.id];
 		if(block.type == "CONTAINER") {
 			continue;
 		}
-		if(rule.conditions) {
-			var eligible = true;
-			for(j = 0; j < rule.conditions.length; j++) {
-				var condition = rule.conditions[j];
-				if(!evaluateCondition(condition)) {
-					eligible = false;
-					break;
-				}
-			}
-			if(eligible) {
-				setActualBlock(i);
-				break;
-			}
-		} else {
-			setActualBlock(i);
-			break;
+		if(!checkDependencies(block)) {
+			continue;
 		}
+		if(block.condition) {
+			if(!evalContextVar(block.condition)) {
+				continue;
+			}
+		}
+		setActualBlock(i);
+		break;
 	}
 }
 
 function getPrevBlock() {
 	moveToBlock = false;
-	for(i = actualBlockIndex-1; i >= 0; i--) {
+	for(var i = actualBlockIndex-1; i >= 0; i--) {
 		var block = workflowModel.blocks[i];
 		var rule = ruleMap[block.id];
 		if(block.type == "CONTAINER") {
 			continue;
 		}
-		if(rule.conditions) {
-			var eligible = true;
-			for(j = 0; j < rule.conditions.length; j++) {
-				var condition = rule.conditions[j];
-				if(!evaluateCondition(condition)) {
-					eligible = false;
-					break;
-				}
-			}
-			if(eligible) {
-				setActualBlock(i);
-				break;
-			}
-		} else {
-			setActualBlock(i);
-			break;
+		if(!checkDependencies(block)) {
+			continue;
 		}
+		if(block.condition) {
+			if(!evalContextVar(block.condition)) {
+				continue;
+			}
+		}
+		setActualBlock(i);
+		break;
 	}
 }
 
 function initModule() {
-	for (i = 0; i < workflowModel.blocks.length; i++) {
+	for(var i = 0; i < workflowModel.blocks.length; i++) {
 		var block = workflowModel.blocks[i];
-		var rule = ruleMap[block.id];
 		var element = document.evaluate(block.xpath, document, null, 
 				XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
 		if(element != null) {
 			//add id
 			$(element).attr("data-simpatico-block-id", block.id);
-			if(rule.conditions) {
-				showElement(block.id, rule.initialState);
-			} else {
-				showElement(block.id, rule.initialState);
-			}
+			//hide element
+			showElement(block.id, "HIDE");
 		}
 	}
-	for (i = 0; i < workflowModel.fields.length; i++) {
+	for(var i = 0; i < workflowModel.fields.length; i++) {
 		var field = workflowModel.fields[i];
 		var element = document.evaluate(field.xpath, document, null, 
 				XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
@@ -459,18 +443,14 @@ function setBlockVars(blockId) {
 			var fieldId = block.fields[index];
 			var field = fieldMap[fieldId];
 			if(field != null) {
-				if(field.mapping.type == "CONTEXT") {
-					workflowModel.context[field.mapping.key] = eval(field.mapping.value);
-				} else if(field.mapping.type == "FIELD") {
-					if(field.mapping.binding == "VAR") {
-						var element = getSimpaticoFieldElement(field.id);
-						if(element != null) {
-							var value = getInputValue(element);
-							if(value != null) {
-								workflowModel.context[field.mapping.key] = value;
-							} else {
-								delete workflowModel.context[field.mapping.key];
-							}
+				if(field.mapping.binding == "OUT" || field.mapping.binding == "INOUT") {
+					var element = getSimpaticoFieldElement(field.id);
+					if(element != null) {
+						var value = getInputValue(element);
+						if(value != null) {
+							contextVar[field.mapping.key] = value;
+						} else {
+							delete contextVar[field.mapping.key];
 						}
 					}
 				}
@@ -486,14 +466,7 @@ function revertBlockVars(blockId) {
 			var fieldId = block.fields[index];
 			var field = fieldMap[fieldId];
 			if(field != null) {
-				if(field.mapping.type == "CONTEXT") {
-					delete workflowModel.context[field.mapping.key];
-				} else if(field.mapping.type == "FIELD") {
-					if(field.mapping.binding == "VAR") {
-						//TODO reset input value?
-						delete workflowModel.context[field.mapping.key];
-					}
-				}
+				delete contextVar[field.mapping.key];
 			}
 		}
 	}
@@ -551,11 +524,12 @@ function prevBlock() {
 
 function nextBlock() {
 	if(actualBlockId) {
+		setBlockVars(actualBlockId);
 		if(isBlockCompleted(actualBlockId)) {
 			blockCompiledMap[actualBlockId] = true;
-			setBlockVars(actualBlockId);
 		} else {
 			delete blockCompiledMap[actualBlockId];
+			revertBlockVars(actualBlockId);
 			setErrorMsg(uncompletedFieldMap);
 		}
 	}
@@ -579,14 +553,11 @@ function fillBlock() {
 			var fieldId = block.fields[index];
 			var field = fieldMap[fieldId];
 			if(field != null) {
-				if((field.mapping.type == "FIELD") && 
-						(field.mapping.binding == "IN" || field.mapping.binding == "INOUT")) {
-					//TODO get value from external source
-					var value = null;
+				if(field.mapping.binding == "IN" || field.mapping.binding == "INOUT") {
+					var value = contextVar[field.mapping.key];
 					var element = getSimpaticoFieldElement(field.id);
 					if(element != null) {
-						//setElementValue(element, value);
-						//workflowModel.context[field.mapping.key] = value;
+						setElementValue(element, value);
 					}
 				}
 			}
@@ -599,20 +570,11 @@ function isBlockCompleted(blockId) {
 	var result = true;
 	var block = blockMap[blockId];
 	if(block != null) {
-		for(index in block.fields) {
-			var fieldId = block.fields[index];
-			var field = fieldMap[fieldId];
-			if(field != null) {
-				if(field.required) {
-					var element = getSimpaticoFieldElement(field.id);
-					if(element != null) {
-						var value = getInputValue(element);
-						if((value == null) || (value == "")) {
-							result = false;
-							uncompletedFieldMap[field.id] = field;
-						}
-					}
-				}
+		if(block.completed) {
+			var completedCondition = evalContextVar(block.completed);
+			if(!completedCondition) {
+				result = false;
+				uncompletedFieldMap[blockId] = block.completed;
 			}
 		}
 	}

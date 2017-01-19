@@ -10,7 +10,9 @@ public class Block {
 	private List<String> tags = new ArrayList<String>();
 	private List<String> fields = new ArrayList<String>();
 	private List<String> blocks = new ArrayList<String>();
-	private String parent;
+	private List<String> dependencies = new ArrayList<String>();
+	private String condition;
+	private String completed;
 	
 	public String getId() {
 		return id;
@@ -23,12 +25,6 @@ public class Block {
 	}
 	public void setType(String type) {
 		this.type = type;
-	}
-	public String getXpath() {
-		return xpath;
-	}
-	public void setXpath(String xpath) {
-		this.xpath = xpath;
 	}
 	public List<String> getTags() {
 		return tags;
@@ -48,10 +44,28 @@ public class Block {
 	public void setBlocks(List<String> blocks) {
 		this.blocks = blocks;
 	}
-	public String getParent() {
-		return parent;
+	public List<String> getDependencies() {
+		return dependencies;
 	}
-	public void setParent(String parent) {
-		this.parent = parent;
+	public void setDependencies(List<String> dependencies) {
+		this.dependencies = dependencies;
+	}
+	public String getCondition() {
+		return condition;
+	}
+	public void setCondition(String condition) {
+		this.condition = condition;
+	}
+	public String getCompleted() {
+		return completed;
+	}
+	public void setCompleted(String completed) {
+		this.completed = completed;
+	}
+	public String getXpath() {
+		return xpath;
+	}
+	public void setXpath(String xpath) {
+		this.xpath = xpath;
 	}
 }

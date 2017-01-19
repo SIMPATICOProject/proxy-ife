@@ -1,0 +1,90 @@
+{
+	"context" : {},
+	"blocks" : [
+		{
+			"id" : "block1",
+			"type" : "BLOCK",
+			"xpath" : "//*[@id=\"modulo\"]/div[2]",
+			"tags" : [],
+			"fields" : ["AventeTitolo_CodiceFiscale"],
+			"completed" : "(context['AventeTitolo_CodiceFiscale'] != null) && (context['AventeTitolo_CodiceFiscale'] != '')"  
+		},
+		{
+			"id" : "block2",
+			"type" : "BLOCK",
+			"xpath" : "//*[@id=\"modulo\"]/div[3]",
+			"tags" : [],
+			"fields" : [],
+			"dependencies" : ["block1"]
+		},
+		{
+			"id" : "block3",
+			"type" : "BLOCK",
+			"xpath" : "//*[@id=\"modulo\"]/div[5]",
+			"tags" : [],
+			"fields" : [],
+			"dependencies" : ["block2"]
+		},
+		{
+			"id" : "block4",
+			"type" : "BLOCK",
+			"xpath" : "//*[@id=\"modulo\"]/div[4]",
+			"tags" : [],
+			"fields" : ["Tassonomia_FullTime", "Tassonomia_PartTime"],
+			"dependencies" : ["block3"],
+			"completed" : "context['Tassonomia_FullTime']=='FT' || context['Tassonomia_PartTime']=='PT'"
+		},		
+		{
+			"id" : "block5",
+			"type" : "BLOCK",
+			"xpath" : "//*[@id=\"modulo\"]/table[1]",
+			"tags" : [],
+			"fields" : [],
+			"dependencies" : ["block4"],
+			"condition" :  "context['Tassonomia_FullTime']=='FT'"
+		},		
+		{
+			"id" : "block6",
+			"type" : "BLOCK",
+			"xpath" : "//*[@id=\"modulo\"]/table[2]",
+			"tags" : [],
+			"fields" : [],
+			"dependencies" : ["block4"],
+			"condition" : "context['Tassonomia_PartTime']=='PT'"
+		},		
+		{
+			"id" : "block7",
+			"type" : "BLOCK",
+			"xpath" : "//*[@id=\"modulo\"]/div[6]",
+			"tags" : [],
+			"fields" : [],
+			"condition" : "context['Tassonomia_FullTime']=='FT' || context['Tassonomia_PartTime']=='PT'"
+		}		
+	],
+	"fields" : [
+		{
+			"id" : "AventeTitolo_CodiceFiscale",
+			"xpath" : "//*[@id=\"AventeTitolo_CodiceFiscale\"]",
+			"mapping" : {
+				"key" : "AventeTitolo_CodiceFiscale",
+				"binding" : "OUT"
+			}
+		},
+		{
+			"id" : "Tassonomia_FullTime",
+			"xpath" : "//*[@id=\"Tassonomia_FullTime\"]",
+			"mapping" : {
+				"key" : "Tassonomia_FullTime",
+				"binding" : "OUT"
+			}
+		},
+		{
+			"id" : "Tassonomia_PartTime",
+			"xpath" : "//*[@id=\"Tassonomia_PartTime\"]",
+			"mapping" : {
+				"key" : "Tassonomia_PartTime",
+				"binding" : "OUT"
+			}
+		}	
+	]
+}

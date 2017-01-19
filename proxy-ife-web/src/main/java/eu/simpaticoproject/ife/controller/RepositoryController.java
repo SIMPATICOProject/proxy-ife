@@ -58,11 +58,11 @@ public class RepositoryController {
 		//TODO from idProfile to profile type
 		String profileType = idProfile;
 		WorkFlowModelStore modelStore = storage.getModelByProfile(uri, profileType);
-		if(logger.isInfoEnabled()) {
-			logger.info(String.format("getPageModel: %s - %s - %s", uri, idProfile, 
-					modelStore.getObjectId()));
-		}
 		if(modelStore != null) {
+			if(logger.isInfoEnabled()) {
+				logger.info(String.format("getPageModel: %s - %s - %s", uri, idProfile, 
+						modelStore.getObjectId()));
+			}
 			return modelStore.getModel();
 		} else {
 			throw new EntityNotFoundException("model not found");
@@ -114,7 +114,7 @@ public class RepositoryController {
 	@ResponseStatus(value=HttpStatus.BAD_REQUEST)
 	@ResponseBody
 	public Map<String,String> handleWrongRequestError(HttpServletRequest request, Exception exception) {
-		exception.printStackTrace();
+		logger.error(exception.getMessage());
 		return Utils.handleError(exception);
 	}
 	
@@ -122,7 +122,7 @@ public class RepositoryController {
 	@ResponseStatus(value=HttpStatus.BAD_REQUEST)
 	@ResponseBody
 	public Map<String,String> handleEntityNotFoundError(HttpServletRequest request, Exception exception) {
-		exception.printStackTrace();
+		logger.error(exception.getMessage());
 		return Utils.handleError(exception);
 	}
 	
@@ -138,7 +138,7 @@ public class RepositoryController {
 	@ResponseStatus(value=HttpStatus.INTERNAL_SERVER_ERROR)
 	@ResponseBody
 	public Map<String,String> handleGenericError(HttpServletRequest request, Exception exception) {
-		exception.printStackTrace();
+		logger.error(exception.getMessage());
 		return Utils.handleError(exception);
 	}
 	
