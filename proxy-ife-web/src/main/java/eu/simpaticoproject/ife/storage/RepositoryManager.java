@@ -11,6 +11,7 @@ import org.springframework.data.mongodb.core.MongoTemplate;
 import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.data.mongodb.core.query.Update;
+import org.springframework.util.StringUtils;
 
 import eu.simpaticoproject.ife.common.Utils;
 import eu.simpaticoproject.ife.exception.WrongRequestException;
@@ -27,7 +28,11 @@ public class RepositoryManager {
 	}
 	
 	public WorkFlowModelStore getModelByProfile(String uri, String profileType) {
-		Query query =  new Query(new Criteria("uri").is(uri).and("profileTypes").is(profileType));
+		Criteria c = new Criteria("uri").is(uri);
+		if (!StringUtils.isEmpty(profileType)) {
+			c.and("profileTypes").is(profileType);
+		}
+		Query query =  new Query(c);
 		WorkFlowModelStore result = mongoTemplate.findOne(query, WorkFlowModelStore.class);
 		return result;
 	}

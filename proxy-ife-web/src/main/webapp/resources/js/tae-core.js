@@ -1,9 +1,25 @@
+/**
+ * TEXT ADAPTATION AND SIMPLIFICATION SERVICE
+ */
 var taeEngine = new function() {
-	
-	this.getDefinitions = function(source, callback, errorCallback, target) {
+	var endpoint = "/ife/api/proxy";
+	/**
+	 * INIT THE ENGINE CONFIG. PARAMETERS:
+	 * - endpoint: URL OF THE TAE API
+	 */
+	this.init = function(config) {
+		config = config || {};
+		if (config.endpoint) {
+			endpoint = config.endpoint;
+		}
+	}
+	/**
+	 * RETRIEVE DEFINITIONS-ANNOTATED TEXT GIVEN NORMAL TEXT
+	 */
+	this.getDefinitions = function(source, callback, errorCallback) {
 	  //var value = document.getElementById(source).innerText;
 		var value = source.replace(/[\t\r\n]/g, '');
-		var url = "/ife/api/proxy/textenrich?lex=0&text=" + value;
+		var url = endpoint + "/textenrich?lex=0&text=" + value;
 	  //$.getJSON('http://hlt-services7.fbk.eu:8011/simp?text=['+value+']')
 		$.getJSON(url)
 		  .done(function(json) {
@@ -21,18 +37,21 @@ var taeEngine = new function() {
 		    }
 		    annotatedText = annotatedText + value.substring(index, value.length);
 		    //console.log('annotatedText ' + annotatedText);
-		    callback(annotatedText, target);
+		    callback(annotatedText);
 		  })
 		  .fail(function( jqxhr, textStatus, error) {
 		  	console.log(textStatus + ", " + error);
-		  	errorCallback("Errore nella comunicazione col server", target);
+		  	errorCallback("Errore nella comunicazione col server");
 		  });
 	};
 	
-	this.getExplanations = function(source, callback, errorCallback, target) {
+	/**
+	 * RETRIEVE SIMPLIFICATION-ANNOTATED TEXT GIVEN NORMAL TEXT
+	 */
+	this.getExplanations = function(source, callback, errorCallback) {
 	  //var value = document.getElementById(source).innerText;
 		var value = source.replace(/[\t\r\n]/g, '');
-		var url = "/ife/api/proxy/textenrich?lex=1&text=" + value;
+		var url = endpoint + "/textenrich?lex=1&text=" + value;
 	  //$.getJSON('http://hlt-services7.fbk.eu:8011/simp?text=['+value+']')
 		$.getJSON(url)
 		  .done(function(json) {
@@ -49,20 +68,23 @@ var taeEngine = new function() {
 		        index = json.simplifications[item].end;
 			    }
 			    annotatedText = annotatedText + value.substring(index, value.length);
-			    callback(annotatedText, target);
+			    callback(annotatedText);
 		    } else {
-		    	callback(source, target);
+		    	callback(source);
 		    } 
 		  })
 		  .fail(function( jqxhr, textStatus, error) {
 		  	console.log(textStatus + ", " + error);
-		  	errorCallback("Errore nella comunicazione col server", target);
+		  	errorCallback("Errore nella comunicazione col server");
 		  });
 	};
 	
-	this.wikipedia = function(source, callback, errorCallback, target) {
+	/**
+	 * RETRIEVE WIKIPEDIA TEXT GIVEN NORMAL TEXT
+	 */
+	this.wikipedia = function(source, callback, errorCallback) {
 		var value = source.replace(/[\t\r\n]/g, '');
-		var url = "/ife/api/proxy/textenrich?lex=1&text=" + value;
+		var url = endpoint + "/textenrich?lex=1&text=" + value;
 		$.getJSON(url)
 		  .done(function(json) {
 		    var index = 0;
@@ -98,13 +120,22 @@ var taeEngine = new function() {
 		    }
 		    annotatedText = annotatedText + value.substring(index, value.length);
 		    //console.log('annotatedText ' + annotatedText);
-		    callback(annotatedText, target);
+		    callback(annotatedText);
 		  })
 		  .fail(function( jqxhr, textStatus, error) {
 		  	console.log(textStatus + ", " + error);
-		  	errorCallback("Errore nella comunicazione col server", target);
+		  	errorCallback("Errore nella comunicazione col server");
 		  });
 	};
+	
+	/**
+	 * RETRIEVE SIMPLIFIED LITERAL TEXT GIVEN NORMAL TEXT
+	 */
+	this.getSimplifiedText = function(source, callback, errorCallback) {
+		// TODO: this is completely fake implementation
+		callback('bla-bla-bla');
+	}
+
 	
 	function compareLinkItem(a, b) {
 		if(a.offset < b.offset) {

@@ -1,17 +1,66 @@
+/**
+ * WORKFLOW ENGINE UI OPERATIONS
+ */
 var waeUI = new function() {
 	
-	this.blockMap = {};
-	var moduleUri = "http://simaptico.eu/test";
-	var idProfile = "test";
+	var blockMap = {};
 	var moduleErrorMessage;
-	var topBarHeight = 5;
+	var topBarHeight = 50;
 	
-	this.loadModel = function() {
+	var labels = {
+			prevButtonLabel: 'Previous',
+			nextButtonLabel: 'Next'
+	};
+	
+	/**
+	 * INITIALIZE UI COMPONENT.
+	 * CONFIG PARAMETERS:
+	 * - endpoint: URL OF THE WAE REPOSITORY ENDPOINT TO LOAD MODELS (FOR CORE MODULE)
+	 * - nextButtonLabel: TEXT FOR NEXT BUTTON
+	 * - prevButtonLabel: TEXT FOR PREV BUTTON
+	 * - topBarHeight: HEIGHT OF THE BAR
+	 */
+	this.init = function(config) {
+		config = config || {};
+		if (config.endpoint) {
+			waeEngine.init({endpoint: config.endpoint});
+		}
+		labels.prevButtonLabel = config.prevButtonLabel || labels.prevButtonLabel;
+		labels.nextButtonLabel = config.nextButtonLabel || labels.nextButtonLabel;
+		topBarHeight = config.topBarHeight || topBarHeight;
+	}
+
+	
+	/**
+	 * LOAD MODEL FROM ENGINE
+	 */
+	this.loadModel = function(idProfile) {
+		var moduleUri = $("[data-simpatico-workflow]").attr('data-simpatico-workflow');
 		waeEngine.loadModel(moduleUri, idProfile, moduleLoaded, moduleLoadError);
 	};
 	
+	/**
+	 * RETURN TRUE IF THE CURRENT PAGE CONTAINS FORM TO SIMPLIFY
+	 */
+	this.enabled = function(){
+		var ens = $("[data-simpatico-workflow]");
+		if(ens && ens.length > 0) return true;
+		return false;
+	}
+	/**
+	 * RESET THE VIEW
+	 */
+	this.reset = function(){
+		for(var key in blockMap) {
+			if(blockMap.hasOwnProperty(key)) {
+				showElement(key, "SHOW");
+			}
+		}
+		$('html, body').animate({scrollTop: 0}, 200);
+	}
+
 	function moduleLoaded(map) {
-		this.blockMap = map;
+		blockMap = map;
 		for(var key in map) {
 			if(map.hasOwnProperty(key)) {
 				showElement(key, "HIDE");
@@ -21,7 +70,7 @@ var waeUI = new function() {
 	};
 	
 	function moduleLoadError(text) {
-		alert(text);
+		alert("Model error");
 	};
 	
 	function showElement(simpaticoId, state) {
@@ -106,7 +155,7 @@ var waeUI = new function() {
 	function createNextButton() {
 	  return $('<button/>', {
 	  	type: 'button',
-	    text: 'Prossimo',
+	    text: labels.nextButtonLabel,
 	    class: 'ui-button ui-widget',
 	    id: 'btn_simpatico_next'
 	  }).click(nextBlock);
@@ -119,7 +168,7 @@ var waeUI = new function() {
 	function createPrevButton() {
 	  return $('<button/>', {
 	    type: 'button',
-	  	text: 'Precedente',
+	  	text: labels.prevButtonLabel,
 	  	class: 'ui-button ui-widget',
 	    id: 'btn_simpatico_prev'
 	  }).click(prevBlock);

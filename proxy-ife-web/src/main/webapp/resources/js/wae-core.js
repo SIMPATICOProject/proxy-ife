@@ -1,4 +1,9 @@
+/**
+ * WORKFLOW ADAPTATION ENGINE
+ */
 var waeEngine = new function() {
+	
+	var endpoint = "";
 	
 	var workflowModel = null;
 	var actualBlockIndex = -1;
@@ -13,26 +18,49 @@ var waeEngine = new function() {
 	var uncompletedFieldMap = {};
 	var contextVar = {};
 	
+	/**
+	 * INIT THE ENGINE CONFIG. PARAMETERS:
+	 * - endpoint: URL OF THE WAE REPOSITORY FOR LOADINF MODELS
+	 */
+	this.init = function(config) {
+		config = config || {};
+		if (config.endpoint) {
+			endpoint = config.endpoint;
+		}
+	}
+	
 	function getActualBlockIndex() {
 		return actualBlockIndex;
  	}; 	
+ 	/**
+ 	 * RETURN CURRENT BLOCK INDEX
+ 	 */
 	this.getActualBlockIndex = getActualBlockIndex;
 	
 	function getBlocksNum() {
 		return workflowModel.blocks.length;
 	}; 
+	/**
+	 * RETURN NUMBER OF BLOCKS
+	 */
 	this.getBlocksNum = getBlocksNum;
 	
 	function getSimpaticoBlockElement(simpaticoId) {
 		var element = $("[data-simpatico-block-id='" + simpaticoId + "'");
 		return element;
 	};
+	/**
+	 * RETURN DOM NODE CORRESPONDING TO THE SPECIFIED BLOCK
+	 */
 	this.getSimpaticoBlockElement = getSimpaticoBlockElement;
 
 	function getSimpaticoFieldElement(simpaticoId) {
 		var element = $("[data-simpatico-field-id='" + simpaticoId + "'");
 		return element;
 	};
+	/**
+	 * RETURN DOM NODE CORRESPONDING TO THE SPECIFIED FIELD
+	 */
 	this.getSimpaticoFieldElement= getSimpaticoFieldElement;
 
 	function getSimpaticoContainer() {
@@ -42,7 +70,7 @@ var waeEngine = new function() {
 	this.getSimpaticoContainer = getSimpaticoContainer;
 
 	function loadModel(uri, idProfile, callback, errorCallback) {
-		var url = "api/wfe/model/page?uri=" + uri + "&idProfile=" + idProfile;
+		var url = endpoint + "api/wfe/model/page?uri=" + uri + (!!idProfile ? ("&idProfile="+idProfile) : "");
 		$.getJSON(url)
 	  .done(function(json) {
 	  	workflowModel = json;
@@ -54,13 +82,16 @@ var waeEngine = new function() {
 	  	}
 	  	//console.log(JSON.stringify(json));
 	  	initModule();
-	  	callback(blockMap);
+	  	if (callback) callback(blockMap);
 	  })
 	  .fail(function( jqxhr, textStatus, error) {
 	  	console.log(textStatus + ", " + error);
-	  	errorCallback(textStatus + ", " + error);
+	  	if (errorCallback) errorCallback(textStatus + ", " + error);
 	  });
 	};
+	/**
+	 * LOAD ADAPTED WORKFLOW MODEL FOR THE SPECIFIED FORM AND USER
+	 */
 	this.loadModel = loadModel;
 
 	function evalBlockEdited(blockId) {
@@ -215,6 +246,9 @@ var waeEngine = new function() {
 		actions[actualBlockId] = "SHOW";
 		callback(actions);
 	};
+	/**
+	 * MOVE TO THE PREVIOUS BLOCK
+	 */
 	this.prevBlock = prevBlock;
 
 	function nextBlock(callback, errorCallback) {
@@ -241,6 +275,9 @@ var waeEngine = new function() {
 		actions[actualBlockId] = "SHOW";
 		callback(actions);
 	};
+	/**
+	 * MOVE TO THE NEXT BLOCK
+	 */
 	this.nextBlock = nextBlock;
 
 	function fillBlock() {

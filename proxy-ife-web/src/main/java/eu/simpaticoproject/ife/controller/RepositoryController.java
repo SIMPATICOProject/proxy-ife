@@ -53,7 +53,7 @@ public class RepositoryController {
 	
 	@RequestMapping(value = "/api/wfe/model/page", method = RequestMethod.GET)
 	public @ResponseBody PageModel getPageModel(@RequestParam String uri,
-			@RequestParam String idProfile,
+			@RequestParam(required=false) String idProfile,
 			HttpServletRequest request) throws Exception {
 		//TODO from idProfile to profile type
 		String profileType = idProfile;
